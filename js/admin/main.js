@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    const headerPromise = $.get("/ecommerceFE/includes/admin/header.html", function (data) {
+    const headerPromise = $.get("/ecommerce_fe/includes/admin/header.html", function (data) {
         $("#header").html(data);
     });
 
-    const sidebarPromise = $.get("/ecommerceFE/includes/admin/sidebar.html", function (data) {
+    const sidebarPromise = $.get("/ecommerce_fe/includes/admin/sidebar.html", function (data) {
         $("#sidebar-container").html(data);
     });
 
