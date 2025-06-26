@@ -1,0 +1,97 @@
+* {
+    font-family: "Oswald", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+i {
+    font-size: 1rem;
+}
+
+.sidebar-collapsed {
+    width: 4rem !important;
+}
+
+.sidebar-collapsed .menu-text {
+    display: none !important;
+}
+
+.sidebar-collapsed .submenu {
+    display: none !important;
+}
+
+.sidebar-collapsed .ml-auto {
+    display: none !important;
+}
+
+.sidebar-collapsed .bg-blue-100,
+.sidebar-collapsed .bg-green-100 {
+    display: none !important;
+}
+
+.sidebar-collapsed .sidebar-header {
+    display: none !important;
+}
+
+.sidebar-collapsed .fas.fa-chevron-down,
+.sidebar-collapsed .fas.fa-chevron-right {
+    display: none !important;
+}
+
+.sidebar-collapsed .menu-item a {
+    justify-content: center !important;
+    padding: 0.75rem !important;
+}
+
+.sidebar-collapsed .menu-item i {
+    margin-right: 0 !important;
+}
+
+.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-mode .bg-white {
+    background-color: #2d2d2d !important;
+}
+
+.dark-mode .text-gray-600 {
+    color: #a0a0a0 !important;
+}
+
+.dark-mode .text-gray-800 {
+    color: #ffffff !important;
+}
+
+.dark-mode .border-gray-200 {
+    border-color: #404040 !important;
+}
+
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.submenu.show {
+    max-height: 200px;
+}
+
+.menu-item:hover {
+    background-color: #f3f4f6;
+}
+
+.dark-mode .menu-item:hover {
+    background-color: #374151;
+}
+
+.menu-item.active {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.menu-item.active:hover {
+    background-color: #2563eb;
+}
