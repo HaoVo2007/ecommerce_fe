@@ -564,6 +564,9 @@
   .w-\[30px\] {
     width: 30px;
   }
+  .w-\[20px\] {
+    width: 20px;
+  }
   .w-\[34px\] {
     width: 34px;
   }
@@ -575,6 +578,9 @@
   }
   .w-\[120px\] {
     width: 120px;
+  }
+  .w-\[150px\] {
+    width: 150px;
   }
   .w-\[250px\] {
     width: 250px;
