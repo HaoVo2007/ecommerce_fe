@@ -131,6 +131,15 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(loginData),
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: false // Set false vì backend đang dùng AllowAllOrigins
+            },
+            beforeSend: function(xhr) {
+                // Đảm bảo gửi đầy đủ headers
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('Accept', 'application/json');
+            },
             success: function (data) {
                 $('#btnLogin').removeClass('loading');
                 $('#buttonText').show();
