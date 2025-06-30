@@ -103,97 +103,97 @@ $(document).ready(function () {
     // Login Form Submit
     // Login Form Submit
     $('#loginForm').on('submit', function (e) {
-        e.preventDefault();
-
-        $('.alert').hide();
-
-        const email = $('#email').val().trim();
-        const password = $('#password').val();
-
-        const loginData = {
-            email: email,
-            password: password
-        };
-
-        // Validate input
-        if (!email || !password) {
-            showError('Please enter both email and password.');
-            return;
+    e.preventDefault();
+    $('.alert').hide();
+    const email = $('#email').val().trim();
+    const password = $('#password').val();
+    const loginData = {
+        email: email,
+        password: password
+    };
+    
+    // Validate input
+    if (!email || !password) {
+        showError('Please enter both email and password.');
+        return;
+    }
+    
+    // Show loading
+    $('#btnLogin').addClass('loading');
+    $('#buttonText').hide();
+    $('#loadingText').show();
+    
+    // Sử dụng fetch thay vì jQuery AJAX
+    fetch(`${ENV.API_BASE_URL}/api/v1/user/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        credentials: 'include', // Thay cho withCredentials: true
+        body: JSON.stringify(loginData)
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        // Show loading
-        $('#btnLogin').addClass('loading');
-        $('#buttonText').hide();
-        $('#loadingText').show();
-
-        $.ajax({
-            url: `${ENV.API_BASE_URL}/api/v1/user/login`,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(loginData),
-            crossDomain: true,
-            xhrFields: {
-                withCredentials: true // Set false vì backend đang dùng AllowAllOrigins
-            },
-            beforeSend: function(xhr) {
-                // Đảm bảo gửi đầy đủ headers
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('Accept', 'application/json');
-            },
-            success: function (data) {
-                $('#btnLogin').removeClass('loading');
-                $('#buttonText').show();
-                $('#loadingText').hide();
-
-                if (data.status_code === 200) {
-                    console.log('Login successful:', data);
-
-                    localStorage.setItem('token', data.data.token);
-                    localStorage.setItem('refresh_token', data.data.refresh_token);
-                    localStorage.setItem('user_info', JSON.stringify(data.data));
-
-                    if (typeof window.AuthManager !== 'undefined') {
-                        window.AuthManager.checkAuthAndUpdateHeader();
-                    }
-
-                    showSuccess('Login successful!');
-
-                    setTimeout(function () {
-                        if (data.data.user_type === 'admin') {
-                            window.location.href = '/ecommerce_fe/admin/index.html';
-                        } else if (data.data.user_type === 'user') {
-                            window.location.href = '/ecommerce_fe/index.html';
-                        } else {
-                            showError('Invalid user type.');
-                        }
-                    }, 1500);
-                } else {
-                    showError('Login failed: ' + (data.message || 'Unknown error.'));
-                }
-            },
-            error: function (xhr) {
-                $('#btnLogin').removeClass('loading');
-                $('#buttonText').show();
-                $('#loadingText').hide();
-
-                console.error('Login failed:', xhr.responseText);
-                let errorMessage = 'Login failed. Please try again.';
-
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseText) {
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        errorMessage = errorResponse.error || errorResponse.message || errorMessage;
-                    } catch (e) {
-                        errorMessage = xhr.responseText;
-                    }
-                }
-
-                showError(errorMessage);
+        return response.json();
+    })
+    .then(data => {
+        $('#btnLogin').removeClass('loading');
+        $('#buttonText').show();
+        $('#loadingText').hide();
+        
+        console.log('Login response:', data);
+        
+        if (data.status_code === 200) {
+            console.log('Login successful:', data);
+            localStorage.setItem('token', data.data.token);
+            localStorage.setItem('refresh_token', data.data.refresh_token);
+            localStorage.setItem('user_info', JSON.stringify(data.data));
+            
+            if (typeof window.AuthManager !== 'undefined') {
+                window.AuthManager.checkAuthAndUpdateHeader();
             }
+            
+            showSuccess('Login successful!');
+            setTimeout(function () {
+                if (data.data.user_type === 'admin') {
+                    window.location.href = '/ecommerce_fe/admin/index.html';
+                } else if (data.data.user_type === 'user') {
+                    window.location.href = '/ecommerce_fe/index.html';
+                } else {
+                    showError('Invalid user type.');
+                }
+            }, 1500);
+        } else {
+            showError('Login failed: ' + (data.message || 'Unknown error.'));
+        }
+    })
+    .catch(error => {
+        $('#btnLogin').removeClass('loading');
+        $('#buttonText').show();
+        $('#loadingText').hide();
+        
+        console.error('Login failed:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack
         });
+        
+        let errorMessage = 'Login failed. Please try again.';
+        if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Network error or CORS issue. Please check console for details.';
+        } else {
+            errorMessage = 'Login failed: ' + error.message;
+        }
+        
+        showError(errorMessage);
     });
+});
 
     function showSuccess(message = 'Success!') {
         $('#alertSuccess').text(message).show();
