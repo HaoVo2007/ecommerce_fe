@@ -133,7 +133,7 @@ $(document).ready(function () {
             data: JSON.stringify(loginData),
             crossDomain: true,
             xhrFields: {
-                withCredentials: false // Set false vì backend đang dùng AllowAllOrigins
+                withCredentials: true // Set false vì backend đang dùng AllowAllOrigins
             },
             beforeSend: function(xhr) {
                 // Đảm bảo gửi đầy đủ headers
