@@ -102,7 +102,7 @@ $(document).ready(function () {
 
     // Login Form Submit
     // Login Form Submit
-    $('#loginForm').on('submit', function (e) {More actions
+    $('#loginForm').on('submit', function (e) {
         e.preventDefault();
 
         $('.alert').hide();
