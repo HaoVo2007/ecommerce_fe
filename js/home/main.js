@@ -181,72 +181,58 @@ $(function () {
 
 
     function handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
-            const token = localStorage.getItem('token');
-
-            if (token) {
-                $.ajax({
-                    url: `${ENV.API_BASE_URL}/api/v1/user/logout`,
-                    type: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    success: function () {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('refresh_token');
-                        localStorage.removeItem('userInfo');
-                        updateHeaderForGuestUser();
-                        showNotification('Logged out successfully.', 'success');
-                        setTimeout(function () {
-                            window.location.href = '/ecommerce_fe/index.html';
-                        }, 1000);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Logout API failed:', error);
-                    }
-                });
-            }
+        if (!confirm('Are you sure you want to logout?')) return;
+    
+        const token = localStorage.getItem('token');
+    
+        if (!token) {
+            toastr.warning('You are not logged in');
+            return;
         }
-    }
-
-    function showNotification(message, type = 'info') {
-        $('.notification').remove();
-
-        const notificationHtml = `
-            <div class="notification fixed top-4 right-4 z-50 max-w-sm w-full">
-                <div class="bg-white dark:bg-gray-800 border-l-4 ${type === 'success' ? 'border-green-400' : 'border-red-400'} rounded-r-lg shadow-lg">
-                    <div class="flex items-center p-4">
-                        <div class="flex-shrink-0">
-                            ${type === 'success' ?
-                '<svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="..."/></svg>' :
-                '<svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="..."/></svg>'}
-                        </div>
-                        <div class="ml-3 flex-1">
-                            <p class="text-sm font-medium ${type === 'success' ? 'text-green-800' : 'text-red-800'} dark:text-white">
-                                ${message}
-                            </p>
-                        </div>
-                        <div class="ml-4 flex-shrink-0">
-                            <button class="close-notification inline-flex text-gray-400 hover:text-gray-600 focus:outline-none">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="..."/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        $('body').append(notificationHtml);
-        setTimeout(() => $('.notification').fadeOut(300, function () { $(this).remove(); }), 3000);
-        $('.close-notification').on('click', function () {
-            $(this).closest('.notification').fadeOut(300, function () {
-                $(this).remove();
-            });
+    
+        $.ajax({
+            url: `${ENV.API_BASE_URL}/api/v1/user/logout`,
+            type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            success: function () {
+                // Xoá thông tin user
+                localStorage.removeItem('token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user_info');
+    
+                if (typeof updateHeaderForGuestUser === 'function') {
+                    updateHeaderForGuestUser();
+                }
+    
+                toastr.success('Logout successful');
+    
+                setTimeout(function () {
+                    window.location.href = '/ecommerce_fe/index.html';
+                }, 1000);
+            },
+            error: function (xhr, status, error) {
+                let errorMessage = 'Logout failed. Please try again.';
+    
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMessage = response.message || response.error || errorMessage;
+                    } catch (e) {
+                        errorMessage = xhr.responseText;
+                    }
+                }
+    
+                console.error('Logout API failed:', error);
+                toastr.error(errorMessage);
+            }
         });
     }
+    
 
     function isTokenExpired(token) {
         try {
@@ -263,7 +249,6 @@ $(function () {
     window.AuthManager = {
         checkAuthAndUpdateHeader: checkAuthAndUpdateHeader,
         handleLogout: handleLogout,
-        showNotification: showNotification,
         isTokenExpired: isTokenExpired
     };
 });

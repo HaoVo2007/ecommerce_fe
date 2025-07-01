@@ -7,13 +7,11 @@ $(document).ready(function () {
     // Register Form Submit
     $('#registerForm').on('submit', function (e) {
         e.preventDefault();
-
-        $('.alert').hide();
-
+    
         $('#btnRegister').addClass('loading');
         $('#buttonText').hide();
         $('#loadingText').show();
-
+    
         const formData = {
             firstName: $('#firstName').val().trim(),
             lastName: $('#lastName').val().trim(),
@@ -21,20 +19,22 @@ $(document).ready(function () {
             email: $('#email').val().trim(),
             password: $('#password').val()
         };
-
+    
+        // Validate required fields
         if (!formData.firstName || !formData.lastName || !formData.phone || !formData.email || !formData.password) {
-            showError('All fields are required.');
+            toastr.warning('Please fill in all required fields');
             resetButton();
             return;
         }
-
+    
+        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) {
-            showError('Please enter a valid email address.');
+            toastr.warning('Email not valid');
             resetButton();
             return;
         }
-
+    
         $.ajax({
             url: `${ENV.API_BASE_URL}/api/v1/user/register`,
             type: 'POST',
@@ -47,40 +47,44 @@ $(document).ready(function () {
                 password: formData.password
             }),
             success: function (response) {
-                console.log('Registration successful:', response);
-
-                if (response.data.token) {
-                    tokenStorage.token = response.data.token;
-                    tokenStorage.refreshToken = response.data.refresh_token;
-
-                    $('#storedToken').text(response.data.token.substring(0, 50) + '...');
+                if (response.status_code === 200 || response.data?.token) {
+                    toastr.success('Registration successful');
+    
+                    const token = response.data.token;
+                    const refreshToken = response.data.refresh_token;
+    
+                    tokenStorage.token = token;
+                    tokenStorage.refreshToken = refreshToken;
+    
+                    $('#storedToken').text(token.substring(0, 50) + '...');
                     $('#tokenDisplay').show();
-
-                    localStorage.setItem('token', response.data.token);
-                    localStorage.setItem('refresh_token', response.data.refresh_token);
+    
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('refresh_token', refreshToken);
                     localStorage.setItem('user_info', JSON.stringify({
                         firstName: formData.firstName,
                         lastName: formData.lastName,
                         email: formData.email,
                         phone: formData.phone
                     }));
-
+    
                     if (typeof window.AuthManager !== 'undefined') {
                         window.AuthManager.checkAuthAndUpdateHeader();
                     }
+    
+                    $('#registerForm')[0].reset();
+    
+                    setTimeout(function () {
+                        // window.location.href = '/ecommerce_fe/index.html';
+                    }, 2000);
+                } else {
+                    toastr.error(response.message || 'Registration failed');
                 }
-
-                showSuccess('Registration successful!');
-                $('#registerForm')[0].reset();
-
-                setTimeout(function () {
-                    // window.location.href = '/ecommerce_fe/index.html';
-                }, 2000);
             },
             error: function (xhr) {
                 console.error('Registration failed:', xhr.responseText);
                 let errorMessage = 'Registration failed. Please try again.';
-
+    
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
                 } else if (xhr.responseText) {
@@ -91,41 +95,40 @@ $(document).ready(function () {
                         errorMessage = xhr.responseText;
                     }
                 }
-
-                showError(errorMessage);
+    
+                toastr.error(errorMessage);
             },
             complete: function () {
                 resetButton();
             }
         });
     });
+    
+    function resetButton() {
+        $('#btnRegister').removeClass('loading');
+        $('#buttonText').show();
+        $('#loadingText').hide();
+    }
+    
 
-    // Login Form Submit
-    // Login Form Submit
     $('#loginForm').on('submit', function (e) {
         e.preventDefault();
-
-        $('.alert').hide();
-
+    
         const email = $('#email').val().trim();
         const password = $('#password').val();
-
-        const loginData = {
-            email: email,
-            password: password
-        };
-
-        // Validate input
+    
+        const loginData = { email, password };
+    
         if (!email || !password) {
-            showError('Please enter both email and password.');
+            toastr.warning('Please enter full email and password');
             return;
         }
-
+    
         // Show loading
         $('#btnLogin').addClass('loading');
         $('#buttonText').hide();
         $('#loadingText').show();
-
+    
         $.ajax({
             url: `${ENV.API_BASE_URL}/api/v1/user/login`,
             type: 'POST',
@@ -133,10 +136,9 @@ $(document).ready(function () {
             data: JSON.stringify(loginData),
             crossDomain: true,
             xhrFields: {
-                withCredentials: true 
+                withCredentials: true
             },
             beforeSend: function(xhr) {
-                // Đảm bảo gửi đầy đủ headers
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.setRequestHeader('Accept', 'application/json');
             },
@@ -144,43 +146,40 @@ $(document).ready(function () {
                 $('#btnLogin').removeClass('loading');
                 $('#buttonText').show();
                 $('#loadingText').hide();
-
+    
                 if (data.status_code === 200) {
-                    console.log('Login successful:', data);
-
+                    toastr.success('Login successfully');
+    
                     localStorage.setItem('token', data.data.token);
                     localStorage.setItem('refresh_token', data.data.refresh_token);
                     localStorage.setItem('user_info', JSON.stringify(data.data));
-
+    
                     if (typeof window.AuthManager !== 'undefined') {
                         window.AuthManager.checkAuthAndUpdateHeader();
                     }
-
-                    showSuccess('Login successful!');
-
+    
                     setTimeout(function () {
                         if (data.data.user_type === 'admin') {
                             window.location.href = '/ecommerce_fe/admin/index.html';
                         } else if (data.data.user_type === 'user') {
                             window.location.href = '/ecommerce_fe/index.html';
                         } else {
-                            showError('Invalid user type.');
+                            toastr.error('User type invalid.');
                         }
-                    }, 1500);
+                    }, 1000);
                 } else {
-                    showError('Login failed: ' + (data.message || 'Unknown error.'));
+                    toastr.error(data.message || 'Login failed');
                 }
             },
             error: function (xhr) {
                 $('#btnLogin').removeClass('loading');
                 $('#buttonText').show();
                 $('#loadingText').hide();
-
-                console.error('Login failed:', xhr.responseText);
+    
                 let errorMessage = 'Login failed. Please try again.';
-
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
+    
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
                 } else if (xhr.responseText) {
                     try {
                         const errorResponse = JSON.parse(xhr.responseText);
@@ -189,22 +188,12 @@ $(document).ready(function () {
                         errorMessage = xhr.responseText;
                     }
                 }
-
-                showError(errorMessage);
+    
+                toastr.error(errorMessage);
             }
         });
     });
-
-    function showSuccess(message = 'Success!') {
-        $('#alertSuccess').text(message).show();
-        setTimeout(() => $('#alertSuccess').fadeOut(), 5000);
-    }
-
-    function showError(message = 'An error occurred.') {
-        $('#errorMessage').text(message);
-        $('#alertError').show();
-        setTimeout(() => $('#alertError').fadeOut(), 5000);
-    }
+    
 
     function resetButton() {
         $('#btnRegister').removeClass('loading');
