@@ -3,15 +3,32 @@ $(document).ready(function () {
         token: null,
         refreshToken: null
     };
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
 
     // Register Form Submit
     $('#registerForm').on('submit', function (e) {
         e.preventDefault();
-    
+
         $('#btnRegister').addClass('loading');
         $('#buttonText').hide();
         $('#loadingText').show();
-    
+
         const formData = {
             firstName: $('#firstName').val().trim(),
             lastName: $('#lastName').val().trim(),
@@ -19,14 +36,14 @@ $(document).ready(function () {
             email: $('#email').val().trim(),
             password: $('#password').val()
         };
-    
+
         // Validate required fields
         if (!formData.firstName || !formData.lastName || !formData.phone || !formData.email || !formData.password) {
             toastr.warning('Please fill in all required fields');
             resetButton();
             return;
         }
-    
+
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) {
@@ -34,7 +51,7 @@ $(document).ready(function () {
             resetButton();
             return;
         }
-    
+
         $.ajax({
             url: `${ENV.API_BASE_URL}/api/v1/user/register`,
             type: 'POST',
@@ -49,16 +66,16 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status_code === 200 || response.data?.token) {
                     toastr.success('Registration successful');
-    
+
                     const token = response.data.token;
                     const refreshToken = response.data.refresh_token;
-    
+
                     tokenStorage.token = token;
                     tokenStorage.refreshToken = refreshToken;
-    
+
                     $('#storedToken').text(token.substring(0, 50) + '...');
                     $('#tokenDisplay').show();
-    
+
                     localStorage.setItem('token', token);
                     localStorage.setItem('refresh_token', refreshToken);
                     localStorage.setItem('user_info', JSON.stringify({
@@ -67,16 +84,16 @@ $(document).ready(function () {
                         email: formData.email,
                         phone: formData.phone
                     }));
-    
+
                     if (typeof window.AuthManager !== 'undefined') {
                         window.AuthManager.checkAuthAndUpdateHeader();
                     }
-    
+
                     $('#registerForm')[0].reset();
-    
+
                     setTimeout(function () {
-                        // window.location.href = '/ecommerce_fe/index.html';
-                    }, 2000);
+                        window.location.href = '/ecommerce_fe/index.html';
+                    }, 500);
                 } else {
                     toastr.error(response.message || 'Registration failed');
                 }
@@ -84,7 +101,7 @@ $(document).ready(function () {
             error: function (xhr) {
                 console.error('Registration failed:', xhr.responseText);
                 let errorMessage = 'Registration failed. Please try again.';
-    
+
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
                 } else if (xhr.responseText) {
@@ -95,7 +112,7 @@ $(document).ready(function () {
                         errorMessage = xhr.responseText;
                     }
                 }
-    
+
                 toastr.error(errorMessage);
             },
             complete: function () {
@@ -103,42 +120,39 @@ $(document).ready(function () {
             }
         });
     });
-    
+
     function resetButton() {
         $('#btnRegister').removeClass('loading');
         $('#buttonText').show();
         $('#loadingText').hide();
     }
-    
+
 
     $('#loginForm').on('submit', function (e) {
         e.preventDefault();
-    
+
         const email = $('#email').val().trim();
         const password = $('#password').val();
-    
+
         const loginData = { email, password };
-    
+
         if (!email || !password) {
             toastr.warning('Please enter full email and password');
             return;
         }
-    
+
         // Show loading
         $('#btnLogin').addClass('loading');
         $('#buttonText').hide();
         $('#loadingText').show();
-    
+
         $.ajax({
             url: `${ENV.API_BASE_URL}/api/v1/user/login`,
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(loginData),
             crossDomain: true,
-            xhrFields: {
-                withCredentials: true
-            },
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.setRequestHeader('Accept', 'application/json');
             },
@@ -146,18 +160,18 @@ $(document).ready(function () {
                 $('#btnLogin').removeClass('loading');
                 $('#buttonText').show();
                 $('#loadingText').hide();
-    
+
                 if (data.status_code === 200) {
                     toastr.success('Login successfully');
-    
+
                     localStorage.setItem('token', data.data.token);
                     localStorage.setItem('refresh_token', data.data.refresh_token);
                     localStorage.setItem('user_info', JSON.stringify(data.data));
-    
+
                     if (typeof window.AuthManager !== 'undefined') {
                         window.AuthManager.checkAuthAndUpdateHeader();
                     }
-    
+
                     setTimeout(function () {
                         if (data.data.user_type === 'admin') {
                             window.location.href = '/ecommerce_fe/admin/index.html';
@@ -175,9 +189,9 @@ $(document).ready(function () {
                 $('#btnLogin').removeClass('loading');
                 $('#buttonText').show();
                 $('#loadingText').hide();
-    
+
                 let errorMessage = 'Login failed. Please try again.';
-    
+
                 if (xhr.responseJSON && xhr.responseJSON.error) {
                     errorMessage = xhr.responseJSON.error;
                 } else if (xhr.responseText) {
@@ -188,12 +202,12 @@ $(document).ready(function () {
                         errorMessage = xhr.responseText;
                     }
                 }
-    
+
                 toastr.error(errorMessage);
             }
         });
     });
-    
+
 
     function resetButton() {
         $('#btnRegister').removeClass('loading');

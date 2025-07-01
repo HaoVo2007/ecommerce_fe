@@ -182,14 +182,14 @@ $(function () {
 
     function handleLogout() {
         if (!confirm('Are you sure you want to logout?')) return;
-    
+
         const token = localStorage.getItem('token');
-    
+
         if (!token) {
             toastr.warning('You are not logged in');
             return;
         }
-    
+
         $.ajax({
             url: `${ENV.API_BASE_URL}/api/v1/user/logout`,
             type: 'POST',
@@ -202,20 +202,20 @@ $(function () {
                 localStorage.removeItem('token');
                 localStorage.removeItem('refresh_token');
                 localStorage.removeItem('user_info');
-    
+
                 if (typeof updateHeaderForGuestUser === 'function') {
                     updateHeaderForGuestUser();
                 }
-    
+
                 toastr.success('Logout successful');
-    
+
                 setTimeout(function () {
                     window.location.href = '/ecommerce_fe/index.html';
                 }, 1000);
             },
             error: function (xhr, status, error) {
                 let errorMessage = 'Logout failed. Please try again.';
-    
+
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
                 } else if (xhr.responseText) {
@@ -226,13 +226,13 @@ $(function () {
                         errorMessage = xhr.responseText;
                     }
                 }
-    
+
                 console.error('Logout API failed:', error);
                 toastr.error(errorMessage);
             }
         });
     }
-    
+
 
     function isTokenExpired(token) {
         try {

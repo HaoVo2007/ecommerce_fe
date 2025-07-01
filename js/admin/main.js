@@ -14,6 +14,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 function initializeEventHandlers() {
+    // Gán class active dựa theo URL hiện tại
+    const currentPath = window.location.pathname;
+
+    $('.menu-item').each(function () {
+        const link = $(this).find('a').attr('href');
+        if (link && currentPath.includes(link)) {
+            $('.menu-item').removeClass('active'); // bỏ active cũ
+            $(this).addClass('active'); // set active mới
+        }
+    });
+
+    // Toggle menu
     $('#menu-toggle').click(function () {
         const sidebar = $('#sidebar');
         const mainContent = $('#main-content');
@@ -29,6 +41,7 @@ function initializeEventHandlers() {
         }
     });
 
+    // Toggle dark mode
     $('#dark-mode-toggle').click(function () {
         $('body').toggleClass('dark-mode');
         const icon = $(this).find('i');
@@ -39,22 +52,19 @@ function initializeEventHandlers() {
         }
     });
 
+    // Toggle submenu
     $('.menu-item').click(function (e) {
-        e.preventDefault();
-
-        $('.menu-item').removeClass('active');
-
-        $(this).addClass('active');
-
         const submenu = $(this).find('.submenu');
         const arrow = $(this).find('[id$="-arrow"]');
 
         if (submenu.length > 0) {
+            e.preventDefault(); // nếu có submenu thì không chuyển trang
             submenu.toggleClass('show');
             arrow.toggleClass('rotate-180');
         }
     });
 
+    // Auto-collapse sidebar on small screens
     $(window).resize(function () {
         if ($(window).width() < 1024) {
             $('#sidebar').addClass('sidebar-collapsed');
@@ -63,5 +73,4 @@ function initializeEventHandlers() {
             $('#main-content').removeClass('ml-16').addClass('ml-64');
         }
     });
-
 }
