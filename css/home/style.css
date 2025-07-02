@@ -4,3 +4,12 @@
     font-weight: 500;
     font-style: normal;
 }
+
+.product-title {
+  height: 55px;                    /* Chiều cao cố định */
+  overflow: hidden;               /* Ẩn phần vượt quá */
+  display: -webkit-box;           
+  -webkit-line-clamp: 2;          /* Giới hạn 2 dòng */
+  -webkit-box-orient: vertical;   
+  text-overflow: ellipsis;       /* Hiện dấu ... */
+}
