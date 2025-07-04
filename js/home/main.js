@@ -9,179 +9,254 @@ $(function () {
     });
 
     $.when(headerPromise, footerPromise).done(function () {
-
-        loadProducts();
-
         // ✅ Sửa lỗi: Thêm dấu # để select element theo ID
         $('#headerBtn').addClass('hidden');
 
         AuthManager.checkAuthAndUpdateHeader();
-
-        $('#navbarToggler').on('click', function () {
+        
+        $(document).on('click', '#navbarToggler', function () {
+            console.log('click');
             $('#navbarCollapse').toggleClass('hidden');
-            // Thêm animation cho hamburger button
-            $(this).toggleClass('active');
         });
 
         $(document).on('click', function (e) {
-            const $target = $(e.target);
             if (
-                !$target.closest('#navbarToggler').length &&
-                !$target.closest('#navbarCollapse').length &&
-                $(window).width() < 1024
+                $(window).width() < 1024 &&
+                !$(e.target).closest('#navbarCollapse, #navbarToggler').length
             ) {
                 $('#navbarCollapse').addClass('hidden');
-                $('#navbarToggler').removeClass('active');
             }
         });
 
-        $('.submenu-item > a').on('click', function (e) {
-            e.preventDefault();
-            const $submenu = $(this).next('.submenu');
-            $('.submenu').not($submenu).slideUp(200);
-            $submenu.stop(true, true).slideToggle(200);
+        // Mobile submenu handling
+        $(document).on('click', '.submenu-item > a', function (e) {
+            if ($(window).width() < 1024) {
+                e.preventDefault();
+                const $submenu = $(this).next('.submenu');
+                $('.submenu').not($submenu).slideUp(200);
+                $submenu.stop(true, true).slideToggle(200);
+            }
+        });
+
+        // Window resize handler
+        $(window).on('resize', function () {
+            if ($(window).width() >= 1024) {
+                $('#navbarCollapse').removeClass('mobile-menu-open').addClass('mobile-menu-closed');
+                $('.submenu').hide(); // Hide all submenus on resize
+            }
         });
     });
+
     function checkAuthAndUpdateHeader() {
         const token = localStorage.getItem('token');
-        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
 
-        if (token) {
+        if (token && !isTokenExpired(token)) {
             updateHeaderForLoggedInUser(userInfo);
+        } else if (token && isTokenExpired(token)) {
+            // Try to refresh token
+            refreshAccessToken(() => {
+                updateHeaderForLoggedInUser(userInfo);
+            });
         } else {
             updateHeaderForGuestUser();
         }
     }
+
     function updateHeaderForLoggedInUser(userInfo) {
-        // Tìm auth section cho desktop
-        const authSection = $('.hidden.sm\\:flex, .sm\\:flex').filter(function () {
-            return $(this).find('a[href*="login"], a[href*="register"]').length > 0;
-        });
+        const userName = userInfo.firstName || userInfo.fristName || 'User';
 
-        // Xử lý mobile menu
-        if ($(window).width() < 1024) {
-            // Xóa mobile user menu cũ (nếu có)
-            $('#navbarCollapse .mobile-user-section').remove();
-
-            const mobileUserMenu = `
-            <div class="mobile-user-section block lg:hidden px-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center py-3 border-b border-gray-200 dark:border-gray-600">
-                    <svg class="w-[20px] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    <span class="font-medium text-dark dark:text-white">${userInfo.firstName || userInfo.fristName || 'User'}</span>
-                </div>
-                 <a href="/ecommerce_fe/profile.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-user"></i> <span>My Profile</span>
-                        </a>
-                        <a href="/ecommerce_fe/orders.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-shopping-bag"></i> <span>My Orders</span>
-                        </a>
-                        <a href="/ecommerce_fe/settings.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-cog"></i> <span>Settings</span>
-                        </a>
-                        <div class="border-t border-gray-100 dark:border-gray-600"></div>
-                        <button id="logoutBtn" class="flex items-center gap-[10px] w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-                        </button>
-            </div>
-        `;
-            $('#navbarCollapse').append(mobileUserMenu);
-
-            $('#logoutBtnMobile').on('click', function (e) {
-                e.preventDefault();
-                handleLogout();
-            });
-        }
-
-        // Xử lý desktop menu
-        if (authSection.length > 0) {
-            const userName = userInfo.firstName || userInfo.fristName || 'User';
+        // Update desktop auth section
+        const desktopAuthSection = $('.hidden.sm\\:flex').last();
+        if (desktopAuthSection.length > 0) {
             const userMenuHtml = `
-            <div class="relative group">
-                <button class="flex items-center mr-12 space-x-2 py-2 px-4 gap-[10px] text-base font-medium text-dark dark:text-white hover:opacity-70 focus:outline-none">
-                    <svg class="w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    <span>${userName}</span>
-                </button>
-                <div class="absolute w-[150px] right-0 mt-2 bg-white dark:bg-gray-800 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div class="py-1">
-                        <a href="/ecommerce_fe/profile.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-user"></i> <span>My Profile</span>
-                        </a>
-                        <a href="/ecommerce_fe/orders.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-shopping-bag"></i> <span>My Orders</span>
-                        </a>
-                        <a href="/ecommerce_fe/settings.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-cog"></i> <span>Settings</span>
-                        </a>
-                        <div class="border-t border-gray-100 dark:border-gray-600"></div>
-                        <button id="logoutBtn" class="flex items-center gap-[10px] w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                <!-- Shopping actions -->
+                <div class="hidden sm:flex items-center space-x-4">
+                    <a href="/ecommerce_fe/wishlist.html" class="icon-hover relative p-2 text-white hover:text-red-400 rounded-full glass-effect">
+                        <i class="fas fa-heart text-xl"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                    <a href="/ecommerce_fe/cart.html" class="icon-hover relative p-2 text-white hover:text-yellow-400 rounded-full glass-effect">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                </div>
+
+                <!-- User Menu -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <div class="relative group">
+                        <button class="btn-secondary py-2 px-6 text-white font-medium rounded-xl hover:bg-white hover:text-purple-600 transition-all duration-300 flex items-center">
+                            <i class="fas fa-user mr-2"></i>
+                            ${userName}
+                            <i class="fas fa-chevron-down ml-2 text-sm transition-transform group-hover:rotate-180"></i>
                         </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 border border-gray-100">
+                            <div class="py-2">
+                                <div class="px-4 py-3 border-b border-gray-100">
+                                    <p class="text-sm font-medium text-gray-900">${userName}</p>
+                                    <p class="text-xs text-gray-500">${userInfo.email || 'user@example.com'}</p>
+                                </div>
+                                
+                                <a href="/ecommerce_fe/profile.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                    <i class="fas fa-user mr-3"></i>My Profile
+                                </a>
+                                
+                                <a href="/ecommerce_fe/orders.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                    <i class="fas fa-shopping-bag mr-3"></i>My Orders
+                                </a>
+                                
+                                <a href="/ecommerce_fe/settings.html" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                    <i class="fas fa-cog mr-3"></i>Settings
+                                </a>
+                                
+                                <div class="border-t border-gray-100 my-2"></div>
+                                
+                                <button id="logoutBtn" class="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-lg mx-2 transition-all duration-300">
+                                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-            authSection.html(userMenuHtml);
-
-            $('#logoutBtn').on('click', function (e) {
-                e.preventDefault();
-                handleLogout();
-            });
+            `;
+            desktopAuthSection.html(userMenuHtml);
         }
+
+        // Update mobile menu
+        updateMobileMenuForLoggedInUser(userInfo);
+
+        // Bind logout events
+        $(document).on('click', '#logoutBtn, #logoutBtnMobile', function (e) {
+            e.preventDefault();
+            handleLogout();
+        });
     }
-    function updateHeaderForGuestUser() {
-        // Xóa mobile user menu nếu có
+
+    function updateMobileMenuForLoggedInUser(userInfo) {
+        const userName = userInfo.firstName || userInfo.fristName || 'User';
+
+        // Remove existing mobile user section
         $('#navbarCollapse .mobile-user-section').remove();
 
-        // Thêm mobile auth section cho guest
-        if ($(window).width() < 1024) {
-            const mobileAuthSection = `
-            <div class="mobile-auth-section block lg:hidden px-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-                <a href="/ecommerce_fe/auth/login.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <i class="fas fa-sign-in-alt w-4"></i> <span>Sign In</span>
-                </a>
-                <a href="/ecommerce_fe/auth/register.html" class="flex items-center gap-[10px] px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <i class="fas fa-user-plus w-4"></i> <span>Sign Up</span>
-                </a>
+        // Add user section to mobile menu
+        const mobileUserSection = `
+            <div class="mobile-user-section border-t border-gray-200 pt-6">
+                <!-- User Info -->
+                <div class="flex items-center mb-4 p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl">
+                    <div class="flex items-center justify-center w-10 h-10 bg-white bg-opacity-20 rounded-full mr-3">
+                        <i class="fas fa-user text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium">${userName}</p>
+                        <p class="text-sm opacity-80">${userInfo.email || 'user@example.com'}</p>
+                    </div>
+                </div>
+
+                <!-- Shopping Actions -->
+                <div class="flex items-center justify-between mb-4">
+                    <a href="/ecommerce_fe/wishlist.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <i class="fas fa-heart"></i>
+                    </a>
+                    <a href="/ecommerce_fe/cart.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                </div>
+
+                <!-- User Menu Items -->
+                <div class="space-y-2">
+                    <a href="/ecommerce_fe/profile.html" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-user mr-3"></i>My Profile
+                    </a>
+                    <a href="/ecommerce_fe/orders.html" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-shopping-bag mr-3"></i>My Orders
+                    </a>
+                    <a href="/ecommerce_fe/settings.html" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-cog mr-3"></i>Settings
+                    </a>
+                    <button id="logoutBtnMobile" class="flex items-center w-full py-3 px-4 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                    </button>
+                </div>
             </div>
         `;
 
-            // Xóa mobile auth section cũ trước khi thêm mới
-            $('#navbarCollapse .mobile-auth-section').remove();
-            $('#navbarCollapse').append(mobileAuthSection);
+        $('#navbarCollapse .p-6').append(mobileUserSection);
+    }
+
+    function updateHeaderForGuestUser() {
+        // Reset desktop auth section to original
+        const desktopAuthSection = $('.hidden.sm\\:flex').last();
+        if (desktopAuthSection.length > 0) {
+            const guestMenuHtml = `
+                <!-- Shopping actions -->
+                <div class="hidden sm:flex items-center space-x-4">
+                    <a href="/ecommerce_fe/wishlist.html" class="icon-hover relative p-2 text-white hover:text-red-400 rounded-full glass-effect">
+                        <i class="fas fa-heart text-xl"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                    <a href="/ecommerce_fe/cart.html" class="icon-hover relative p-2 text-white hover:text-yellow-400 rounded-full glass-effect">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                </div>
+
+                <!-- Auth buttons -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <a href="/ecommerce_fe/auth/login.html" class="btn-secondary py-2 px-6 text-white font-medium rounded-xl hover:bg-white hover:text-purple-600 transition-all duration-300">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    </a>
+                    <a href="/ecommerce_fe/auth/register.html" class="btn-primary py-2 px-6 text-gray-800 font-semibold rounded-xl hover:shadow-lg">
+                        <i class="fas fa-user-plus mr-2"></i>Sign Up
+                    </a>
+                </div>
+            `;
+            desktopAuthSection.html(guestMenuHtml);
         }
 
-        // Khôi phục desktop auth section
-        const authSection = $('.hidden.sm\\:flex, .sm\\:flex').filter(function () {
-            return $(this).find('button, a[href*="profile"], #logoutBtn').length > 0;
-        });
+        // Update mobile menu for guest
+        updateMobileMenuForGuest();
+    }
 
-        if (authSection.length > 0) {
-            const guestMenuHtml = `
-            <a href="/ecommerce_fe/auth/login.html"
-               class="loginBtn py-2 px-[22px] text-base font-medium text-dark dark:text-white hover:opacity-70">
-               Sign In
-            </a>
-            <a href="/ecommerce_fe/auth/register.html"
-               class="px-6 py-2 text-base font-medium text-white duration-300 ease-in-out rounded-md signUpBtn bg-primary hover:bg-blue-dark">
-               Sign Up
-            </a>
-        `;
-            authSection.html(guestMenuHtml);
+    function updateMobileMenuForGuest() {
+        // Remove existing mobile user section
+        $('#navbarCollapse .mobile-user-section').remove();
+
+        // The mobile menu for guest users is already in the original HTML
+        // Just ensure shopping actions are present
+        const existingShoppingActions = $('#navbarCollapse .flex.items-center.justify-between.mb-4');
+        if (existingShoppingActions.length === 0) {
+            const guestShoppingSection = `
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <a href="/ecommerce_fe/wishlist.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-heart"></i>
+                        </a>
+                        <a href="/ecommerce_fe/cart.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+                    </div>
+                    <div class="space-y-3">
+                        <a href="/ecommerce_fe/auth/login.html" class="block w-full py-3 px-4 text-center text-gray-700 border-2 border-gray-300 rounded-xl hover:border-purple-500 hover:text-purple-600 transition-all duration-300">
+                            Sign In
+                        </a>
+                        <a href="/ecommerce_fe/auth/register.html" class="block w-full py-3 px-4 text-center text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:shadow-lg transition-all duration-300">
+                            Sign Up
+                        </a>
+                    </div>
+                </div>
+            `;
+            $('#navbarCollapse .p-6').append(guestShoppingSection);
         }
     }
 
     function refreshAccessToken(callback) {
         const refreshToken = localStorage.getItem('refresh_token');
         if (!refreshToken) {
-            toastr.error('No refresh token found. Please log in again.');
+            console.warn('No refresh token found');
             localStorage.clear();
-            window.location.href = '/ecommerce_fe/auth/login.html';
+            updateHeaderForGuestUser();
             return;
         }
 
@@ -196,15 +271,15 @@ $(function () {
                         callback(newAccessToken);
                     }
                 } else {
-                    toastr.error('Failed to refresh token. Please log in again.');
+                    console.error('Failed to refresh token');
                     localStorage.clear();
-                    window.location.href = '/ecommerce_fe/auth/login.html';
+                    updateHeaderForGuestUser();
                 }
             },
-            error: function () {
-                toastr.error('Session expired. Please log in again.');
+            error: function (xhr) {
+                console.error('Refresh token failed:', xhr.responseText);
                 localStorage.clear();
-                window.location.href = '/ecommerce_fe/auth/login.html';
+                updateHeaderForGuestUser();
             }
         });
     }
@@ -214,7 +289,9 @@ $(function () {
 
         let token = localStorage.getItem('token');
         if (!token) {
-            toastr.warning('You are not logged in');
+            if (typeof toastr !== 'undefined') {
+                toastr.warning('You are not logged in');
+            }
             return;
         }
 
@@ -231,11 +308,11 @@ $(function () {
                     localStorage.removeItem('refresh_token');
                     localStorage.removeItem('user_info');
 
-                    if (typeof updateHeaderForGuestUser === 'function') {
-                        updateHeaderForGuestUser();
-                    }
+                    updateHeaderForGuestUser();
 
-                    toastr.success('Logout successful');
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success('Logout successful');
+                    }
 
                     setTimeout(function () {
                         window.location.href = '/ecommerce_fe/index.html';
@@ -243,9 +320,9 @@ $(function () {
                 },
                 error: function (xhr) {
                     if (xhr.status === 401) {
-                        // Token expired → refresh rồi retry logout
+                        // Token expired → refresh then retry logout
                         refreshAccessToken((newToken) => {
-                            doLogout(newToken); // retry logout
+                            doLogout(newToken);
                         });
                     } else {
                         let errorMessage = 'Logout failed. Please try again.';
@@ -262,7 +339,9 @@ $(function () {
                         }
 
                         console.error('Logout API failed:', errorMessage);
-                        toastr.error(errorMessage);
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(errorMessage);
+                        }
                     }
                 }
             });
@@ -281,10 +360,31 @@ $(function () {
             return true;
         }
     }
-    
+
+    // Update cart badge function
+    function updateCartBadge() {
+        // This function can be called to update cart count from localStorage or API
+        const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+        $('.cart-badge').each(function () {
+            const parentHref = $(this).parent().attr('href');
+            if (parentHref && parentHref.includes('cart')) {
+                $(this).text(cartItems.length);
+            } else if (parentHref && parentHref.includes('wishlist')) {
+                $(this).text(wishlistItems.length);
+            }
+        });
+    }
+
+    // Initialize cart badge on page load
+    updateCartBadge();
+
+    // Global AuthManager object
     window.AuthManager = {
         checkAuthAndUpdateHeader: checkAuthAndUpdateHeader,
         handleLogout: handleLogout,
         isTokenExpired: isTokenExpired,
+        updateCartBadge: updateCartBadge
     };
 });

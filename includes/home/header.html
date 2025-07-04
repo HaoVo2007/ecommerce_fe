@@ -1,120 +1,152 @@
-<div class="absolute top-0 left-0 z-40 flex fixed box-shadow items-center w-full bg-white ud-header">
-    <div class="container mx-auto px-4">
-        <div class="relative flex items-center justify-between -mx-4">
-            <div class="max-w-full px-4 w-60">
-                <a href="/ecommerce_fe/index.html" class="block w-full navbar-logo">
-                    <img style="width: 90px; height: 70px;" src="/ecommerce_fe/assets/images/logo.png" alt="logo" />
-                </a>
-            </div>
-            <div class="flex items-center justify-between w-full px-4">
-                <div>
-                    <button id="navbarToggler" style="z-index: 1001;"
-                        class="absolute right-4 top-1/2 block -translate-y-1/2 rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden">
-                        <span class="relative my-[6px] block h-[2px] w-[30px] bg-dark dark:bg-white"></span>
-                        <span class="relative my-[6px] block h-[2px] w-[30px] bg-dark dark:bg-white"></span>
-                        <span class="relative my-[6px] block h-[2px] w-[30px] bg-dark dark:bg-white"></span>
-                    </button>
-                    <nav id="navbarCollapse"
-                        class="absolute right-4 top-full hidden w-full max-w-[250px] rounded-lg bg-white dark:bg-dark-2 py-5 shadow-lg lg:static lg:block lg:w-full lg:max-w-full lg:bg-transparent dark:lg:bg-transparent lg:py-0 lg:px-4 lg:shadow-none xl:px-6">
-                        <ul class="blcok lg:flex 2xl:ml-20">
-                            <li class="relative group">
-                                <a href="#home"
-                                    class="flex py-2 mx-8 text-base font-medium ud-menu-scroll text-dark dark:text-white group-hover:text-primary lg:mr-0 lg:inline-flex lg:py-6 lg:px-0 lg:text-body-color dark:lg:text-dark-6">
-                                    Home
-                                </a>
-                            </li>
-                            <li class="relative group">
-                                <a href="/#about"
-                                    class="flex py-2 mx-8 text-base font-medium ud-menu-scroll text-dark dark:text-white group-hover:text-primary lg:mr-0 lg:ml-7 lg:inline-flex lg:py-6 lg:px-0 lg:text-body-color dark:lg:text-dark-6 xl:ml-10">
-                                    About
-                                </a>
-                            </li>
-                            <li class="relative group">
-                                <a href="/#pricing"
-                                    class="flex py-2 mx-8 text-base font-medium ud-menu-scroll text-dark dark:text-white group-hover:text-primary lg:mr-0 lg:ml-7 lg:inline-flex lg:py-6 lg:px-0 lg:text-body-color dark:lg:text-dark-6 xl:ml-10">
-                                    Pricing
-                                </a>
-                            </li>
-                            <li class="relative group">
-                                <a href="/#team"
-                                    class="flex py-2 mx-8 text-base font-medium ud-menu-scroll text-dark dark:text-white group-hover:text-primary lg:mr-0 lg:ml-7 lg:inline-flex lg:py-6 lg:px-0 lg:text-body-color dark:lg:text-dark-6 xl:ml-10">
-                                    Team
-                                </a>
-                            </li>
-                            <li class="relative group">
-                                <a href="/#contact"
-                                    class="flex py-2 mx-8 text-base font-medium ud-menu-scroll text-dark dark:text-white group-hover:text-primary lg:mr-0 lg:ml-7 lg:inline-flex lg:py-6 lg:px-0 lg:text-body-color dark:lg:text-dark-6 xl:ml-10">
-                                    Contact
-                                </a>
-                            </li>
-                            <li class="relative group">
-                                <a href="blog-grids.html"
-                                    class="flex py-2 mx-8 text-base font-medium ud-menu-scroll text-dark dark:text-white group-hover:text-primary lg:mr-0 lg:ml-7 lg:inline-flex lg:py-6 lg:px-0 lg:text-body-color dark:lg:text-dark-6 xl:ml-10">
-                                    Blog
-                                </a>
-                            </li>
-                            <li class="relative submenu-item group">
-                                <a href="javascript:void(0)"
-                                    class="relative flex items-center justify-between py-2 mx-8 text-base font-medium text-primary group-hover:text-primary lg:mr-0 lg:ml-8 lg:inline-flex lg:py-6 lg:pl-0 lg:pr-4 xl:ml-10">
-                                    Pages
-
-                                    <svg class="ml-2 fill-current" width="16" height="20" viewBox="0 0 16 20"
-                                        fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M7.99999 14.9C7.84999 14.9 7.72499 14.85 7.59999 14.75L1.84999 9.10005C1.62499 8.87505 1.62499 8.52505 1.84999 8.30005C2.07499 8.07505 2.42499 8.07505 2.64999 8.30005L7.99999 13.525L13.35 8.25005C13.575 8.02505 13.925 8.02505 14.15 8.25005C14.375 8.47505 14.375 8.82505 14.15 9.05005L8.39999 14.7C8.27499 14.825 8.14999 14.9 7.99999 14.9Z" />
-                                    </svg>
-                                </a>
-                                <div
-                                    class="submenu relative top-full left-0 hidden w-[250px] rounded-xs bg-white dark:bg-dark-2 p-4 transition-[top] duration-300 group-hover:opacity-100 lg:invisible lg:absolute lg:top-[110%] lg:block lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full">
-                                    <a href="about.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-body-color dark:text-dark-6 hover:text-primary dark:hover:text-primary">
-                                        About Page
-                                    </a>
-                                    <a href="pricing.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-body-color dark:text-dark-6 hover:text-primary dark:hover:text-primary">
-                                        Pricing Page
-                                    </a>
-                                    <a href="contact.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-body-color dark:text-dark-6 hover:text-primary dark:hover:text-primary">
-                                        Contact Page
-                                    </a>
-                                    <a href="blog-grids.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-body-color dark:text-dark-6 hover:text-primary dark:hover:text-primary">
-                                        Blog Grid Page
-                                    </a>
-                                    <a href="blog-details.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-body-color dark:text-dark-6 hover:text-primary dark:hover:text-primary">
-                                        Blog Details Page
-                                    </a>
-
-                                    <a href="/ecommerce_fe/auth/login.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-body-color dark:text-dark-6 hover:text-primary dark:hover:text-primary">
-                                        Sign Up Page
-                                    </a>
-                                    <a href="/ecommerce_fe/auth/register.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-primary hover:text-primary dark:hover:text-primary">
-                                        Sign In Page
-                                    </a>
-                                    <a href="404.html"
-                                        class="block rounded-sm py-[10px] px-4 text-sm text-body-color dark:text-dark-6 hover:text-primary dark:hover:text-primary">
-                                        404 Page
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                    </nav>
+<header class="fixed top-0 left-0 w-full z-50 header-gradient">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/ecommerce_fe/index.html" class="logo-container block">
+                        <div class="bg-white rounded-xl p-2 shadow-lg">
+                            <img style="width: 60px; height: 50px;" src="/ecommerce_fe/assets/images/logo.png" alt="logo" class="object-contain" />
+                        </div>
+                    </a>
                 </div>
-                <div class="hidden sm:flex">
-                    <a href="/ecommerce_fe/auth/login.html"
-                        class="loginBtn py-2 px-[22px] text-base font-medium text-dark dark:text-white hover:opacity-70">
-                        Sign In
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-white hover:text-yellow-300 font-medium py-2 px-4 rounded-lg transition-all duration-300">
+                        <i class="fas fa-home mr-2"></i>Home
                     </a>
-                    <a href="/ecommerce_fe/auth/register.html"
-                        class="px-6 py-2 text-base font-medium text-white duration-300 ease-in-out rounded-md signUpBtn bg-primary hover:bg-blue-dark">
-                        Sign Up
+                    <a href="/#about" class="nav-link text-white hover:text-yellow-300 font-medium py-2 px-4 rounded-lg transition-all duration-300">
+                        <i class="fas fa-info-circle mr-2"></i>About
                     </a>
+                    <a href="/#pricing" class="nav-link text-white hover:text-yellow-300 font-medium py-2 px-4 rounded-lg transition-all duration-300">
+                        <i class="fas fa-tags mr-2"></i>Pricing
+                    </a>
+                    <a href="/#team" class="nav-link text-white hover:text-yellow-300 font-medium py-2 px-4 rounded-lg transition-all duration-300">
+                        <i class="fas fa-users mr-2"></i>Team
+                    </a>
+                    <a href="/#contact" class="nav-link text-white hover:text-yellow-300 font-medium py-2 px-4 rounded-lg transition-all duration-300">
+                        <i class="fas fa-envelope mr-2"></i>Contact
+                    </a>
+                    <a href="blog-grids.html" class="nav-link text-white hover:text-yellow-300 font-medium py-2 px-4 rounded-lg transition-all duration-300">
+                        <i class="fas fa-blog mr-2"></i>Blog
+                    </a>
+                    
+                    <!-- Pages Dropdown -->
+                    <div class="relative submenu-item group">
+                        <a href="javascript:void(0)" class="nav-link text-white hover:text-yellow-300 font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center">
+                            <i class="fas fa-th-large mr-2"></i>Pages
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                        <div class="submenu absolute top-full left-0 mt-2 w-64 rounded-xl py-4 shadow-xl">
+                            <a href="about.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-info-circle mr-3"></i>About Page
+                            </a>
+                            <a href="pricing.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-tags mr-3"></i>Pricing Page
+                            </a>
+                            <a href="contact.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-envelope mr-3"></i>Contact Page
+                            </a>
+                            <a href="blog-grids.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-th-large mr-3"></i>Blog Grid Page
+                            </a>
+                            <a href="blog-details.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-file-alt mr-3"></i>Blog Details Page
+                            </a>
+                            <div class="border-t border-gray-200 my-2"></div>
+                            <a href="/ecommerce_fe/auth/login.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-sign-in-alt mr-3"></i>Sign In Page
+                            </a>
+                            <a href="/ecommerce_fe/auth/register.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-user-plus mr-3"></i>Sign Up Page
+                            </a>
+                            <a href="404.html" class="block px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-lg mx-2 transition-all duration-300">
+                                <i class="fas fa-exclamation-triangle mr-3"></i>404 Page
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Right side actions -->
+                <div class="flex items-center space-x-4 z-50">
+                    <!-- Auth buttons -->
+                    <div class="hidden sm:flex items-center space-x-3">
+                        <a href="/ecommerce_fe/auth/login.html" class="btn-secondary py-2 px-6 text-white font-medium rounded-xl hover:bg-white hover:text-purple-600 transition-all duration-300">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                        </a>
+                        <a href="/ecommerce_fe/auth/register.html" class="btn-primary py-2 px-6 text-gray-800 font-semibold rounded-xl hover:shadow-lg">
+                            <i class="fas fa-user-plus mr-2"></i>Sign Up
+                        </a>
+                    </div>
+
+                    <!-- Mobile menu button -->
+                    <button id="navbarToggler" class="lg:hidden p-2 text-white rounded-lg glass-effect hover:bg-white hover:text-purple-600 transition-all duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
+        <!-- Mobile Navigation -->
+        <nav id="navbarCollapse" class="lg:hidden hidden fixed top-0 right-0 w-80 h-full transform transition-transform duration-300 ease-in-out">
+            <div style="margin-top: 90px;" class="p-6 overflow-y-auto h-96 bg-white">    
+                <div class="space-y-4 mb-8 bg-dark-2">
+                    <a href="#home" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-home mr-3"></i>Home
+                    </a>
+                    <a href="/#about" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-info-circle mr-3"></i>About
+                    </a>
+                    <a href="/#pricing" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-tags mr-3"></i>Pricing
+                    </a>
+                    <a href="/#team" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-users mr-3"></i>Team
+                    </a>
+                    <a href="/#contact" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-envelope mr-3"></i>Contact
+                    </a>
+                    <a href="blog-grids.html" class="flex items-center py-3 px-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white rounded-xl transition-all duration-300">
+                        <i class="fas fa-blog mr-3"></i>Blog
+                    </a>
+                </div>
+
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Pages</h4>
+                    <div class="space-y-2">
+                        <a href="about.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">About Page</a>
+                        <a href="pricing.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">Pricing Page</a>
+                        <a href="contact.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">Contact Page</a>
+                        <a href="blog-grids.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">Blog Grid Page</a>
+                        <a href="blog-details.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">Blog Details Page</a>
+                        <a href="/ecommerce_fe/auth/login.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">Sign In Page</a>
+                        <a href="/ecommerce_fe/auth/register.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">Sign Up Page</a>
+                        <a href="404.html" class="block py-2 px-4 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-gray-100 transition-all duration-300">404 Page</a>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <a href="/wishlist.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-heart"></i>
+                        </a>
+                        <a href="/cart.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+                    </div>
+                    <div class="space-y-3">
+                        <a href="/ecommerce_fe/auth/login.html" class="block w-full py-3 px-4 text-center text-gray-700 border-2 border-gray-300 rounded-xl hover:border-purple-500 hover:text-purple-600 transition-all duration-300">
+                            Sign In
+                        </a>
+                        <a href="/ecommerce_fe/auth/register.html" class="block w-full py-3 px-4 text-center text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:shadow-lg transition-all duration-300">
+                            Sign Up
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
