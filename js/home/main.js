@@ -175,58 +175,102 @@ $(function () {
             authSection.html(guestMenuHtml);
         }
     }
+
+    function refreshAccessToken(callback) {
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) {
+            toastr.error('No refresh token found. Please log in again.');
+            localStorage.clear();
+            window.location.href = '/ecommerce_fe/auth/login.html';
+            return;
+        }
+
+        $.ajax({
+            url: `${ENV.API_BASE_URL}/api/v1/user/refresh?refresh_token=${refreshToken}`,
+            type: 'GET',
+            success: function (response) {
+                const newAccessToken = response.data.token;
+                if (newAccessToken) {
+                    localStorage.setItem('token', newAccessToken);
+                    if (typeof callback === 'function') {
+                        callback(newAccessToken);
+                    }
+                } else {
+                    toastr.error('Failed to refresh token. Please log in again.');
+                    localStorage.clear();
+                    window.location.href = '/ecommerce_fe/auth/login.html';
+                }
+            },
+            error: function () {
+                toastr.error('Session expired. Please log in again.');
+                localStorage.clear();
+                window.location.href = '/ecommerce_fe/auth/login.html';
+            }
+        });
+    }
+
     function handleLogout() {
         if (!confirm('Are you sure you want to logout?')) return;
 
-        const token = localStorage.getItem('token');
-
+        let token = localStorage.getItem('token');
         if (!token) {
             toastr.warning('You are not logged in');
             return;
         }
 
-        $.ajax({
-            url: `${ENV.API_BASE_URL}/api/v1/user/logout`,
-            type: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            success: function () {
-                // Xoá thông tin user
-                localStorage.removeItem('token');
-                localStorage.removeItem('refresh_token');
-                localStorage.removeItem('user_info');
+        const doLogout = (authToken) => {
+            $.ajax({
+                url: `${ENV.API_BASE_URL}/api/v1/user/logout`,
+                type: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + authToken,
+                    'Content-Type': 'application/json'
+                },
+                success: function () {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('refresh_token');
+                    localStorage.removeItem('user_info');
 
-                if (typeof updateHeaderForGuestUser === 'function') {
-                    updateHeaderForGuestUser();
-                }
+                    if (typeof updateHeaderForGuestUser === 'function') {
+                        updateHeaderForGuestUser();
+                    }
 
-                toastr.success('Logout successful');
+                    toastr.success('Logout successful');
 
-                setTimeout(function () {
-                    window.location.href = '/ecommerce_fe/index.html';
-                }, 1000);
-            },
-            error: function (xhr, status, error) {
-                let errorMessage = 'Logout failed. Please try again.';
+                    setTimeout(function () {
+                        window.location.href = '/ecommerce_fe/index.html';
+                    }, 1000);
+                },
+                error: function (xhr) {
+                    if (xhr.status === 401) {
+                        // Token expired → refresh rồi retry logout
+                        refreshAccessToken((newToken) => {
+                            doLogout(newToken); // retry logout
+                        });
+                    } else {
+                        let errorMessage = 'Logout failed. Please try again.';
 
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseText) {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        errorMessage = response.message || response.error || errorMessage;
-                    } catch (e) {
-                        errorMessage = xhr.responseText;
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseText) {
+                            try {
+                                const response = JSON.parse(xhr.responseText);
+                                errorMessage = response.message || response.error || errorMessage;
+                            } catch (e) {
+                                errorMessage = xhr.responseText;
+                            }
+                        }
+
+                        console.error('Logout API failed:', errorMessage);
+                        toastr.error(errorMessage);
                     }
                 }
+            });
+        };
 
-                console.error('Logout API failed:', error);
-                toastr.error(errorMessage);
-            }
-        });
+        doLogout(token);
     }
+
     function isTokenExpired(token) {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
