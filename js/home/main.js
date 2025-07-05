@@ -48,6 +48,7 @@ $(function () {
     });
 
     function checkAuthAndUpdateHeader() {
+        console.log('checkAuthAndUpdateHeader');
         const token = localStorage.getItem('token');
         const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
 
@@ -64,6 +65,7 @@ $(function () {
     }
 
     function updateHeaderForLoggedInUser(userInfo) {
+        console.log('updateHeaderForLoggedInUser');
         const userName = userInfo.firstName || userInfo.fristName || 'User';
 
         // Update desktop auth section
@@ -181,11 +183,12 @@ $(function () {
                 </div>
             </div>
         `;
-
+        console.log("mobileUserSection", mobileUserSection);
         $('#navbarCollapse .p-6').append(mobileUserSection);
     }
 
     function updateHeaderForGuestUser() {
+        console.log('updateHeaderForGuestUser');
         // Reset desktop auth section to original
         const desktopAuthSection = $('.hidden.sm\\:flex').last();
         if (desktopAuthSection.length > 0) {
@@ -227,6 +230,7 @@ $(function () {
         // Just ensure shopping actions are present
         const existingShoppingActions = $('#navbarCollapse .flex.items-center.justify-between.mb-4');
         if (existingShoppingActions.length === 0) {
+            console.log('Adding guest shopping actions');
             const guestShoppingSection = `
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex items-center justify-between mb-4">
