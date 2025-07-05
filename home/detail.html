@@ -15,93 +15,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="/ecommerce_fe/css/home/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Oswald', sans-serif;
-        }
-        
-        .thumbnail-image {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .thumbnail-image:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .thumbnail-image.active {
-            border: 3px solid #3b82f6;
-            transform: scale(1.02);
-        }
-        
-        .main-image {
-            transition: all 0.3s ease;
-        }
-        
-        .size-option {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .size-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .size-option.selected {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .add-to-cart-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-            transition: all 0.3s ease;
-        }
-        
-        .add-to-cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-        }
-        
-        .rating-stars {
-            color: #fbbf24;
-        }
-        
-        .price-section {
-            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .loading {
-            display: none;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .product-badge {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-        }
-    </style>
 </head>
 
 <body class="bg-gray-50">
@@ -114,7 +27,7 @@
         <div id="loading" class="loading fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
             <div class="text-center">
                 <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-                <p class="mt-4 text-gray-600">Đang tải sản phẩm...</p>
+                <p class="mt-4 text-gray-600">Loading...</p>
             </div>
         </div>
 
@@ -144,10 +57,10 @@
                         <h2 id="product-name" class="text-3xl font-bold text-gray-800 mb-2">Loading...</h2>
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
-                                <div id="rating-stars" class="rating-stars text-lg">
+                                <div id="rating-stars" class="rating-stars flex items-center space-x-2 text-lg">
                                     <!-- Stars will be inserted here -->
                                 </div>
-                                <span id="rating-text" class="ml-2 text-gray-600">(0 đánh giá)</span>
+                                <span id="rating-text" class="ml-2 text-gray-600">(0 Reviews    )</span>
                             </div>
                             <span id="product-color" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Loading...</span>
                         </div>
@@ -160,21 +73,21 @@
                             <span id="original-price" class="text-xl text-gray-500 line-through">0 VND</span>
                             <span id="discount-percent" class="bg-red-500 text-white px-2 py-1 rounded-md text-sm font-bold">-0%</span>
                         </div>
-                        <p class="text-sm text-gray-600 mt-2">Giá đã bao gồm VAT</p>
+                        <p class="text-sm text-gray-600 mt-2">Price includes VAT</p>
                     </div>
 
                     <!-- Size Selection -->
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Chọn kích thước:</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Select Size:</h3>
                         <div id="size-options" class="grid grid-cols-4 gap-2">
                             <!-- Size options will be inserted here -->
                         </div>
-                        <p id="stock-info" class="text-sm text-gray-600 mt-2">Chọn kích thước để xem tồn kho</p>
+                        <p id="stock-info" class="text-sm text-gray-600 mt-2">Slecte size to check stock</p>
                     </div>
 
                     <!-- Quantity Selection -->
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Số lượng:</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Quantity:</h3>
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center border-2 border-gray-300 rounded-lg">
                                 <button id="decrease-qty" class="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors">-</button>
@@ -186,13 +99,13 @@
 
                     <!-- Action Buttons -->
                     <div class="space-y-3">
-                        <button id="add-to-cart" class="add-to-cart-btn w-full py-4 text-white font-bold rounded-lg text-lg">
+                        <button class="add-to-cart add-to-cart-btn w-full py-4 text-white font-bold rounded-lg text-lg">
                             <i class="fas fa-shopping-cart mr-2"></i>
-                            Thêm vào giỏ hàng
+                            Add to Cart
                         </button>
                         <button class="w-full py-4 bg-blue-600 text-white font-bold rounded-lg text-lg hover:bg-blue-700 transition-colors">
                             <i class="fas fa-bolt mr-2"></i>
-                            Mua ngay
+                            Buy Now
                         </button>
                     </div>
                 </div>
@@ -200,7 +113,7 @@
 
             <!-- Product Description -->
             <div class="mt-12 bg-white rounded-2xl shadow-lg p-8">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Mô tả sản phẩm</h3>
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Product Description</h3>
                 <div id="product-description" class="text-gray-600 leading-relaxed">
                     Loading description...
                 </div>
@@ -209,260 +122,10 @@
     </div>
     <script src="/ecommerce_fe/js/env.js"></script>
     <script src="/ecommerce_fe/js/home/main.js"></script>
+    <script src="/ecommerce_fe/js/home/components/product.js"></script>
     <script>
-        // Global variables
-        let productData = null;
-        let selectedSize = null;
-        let currentQuantity = 1;
-
-        // Get product ID from URL
-        function getProductId() {
-            const pathParts = window.location.pathname.split('/');
-            const productId = pathParts[pathParts.length - 1];
-            return productId || '685035c8095e73f3384a39c2'; // Default ID for testing
-        }
-
-        // Format currency
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).format(amount);
-        }
-
-        // Generate star rating
-        function generateStars(rating) {
-            let stars = '';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= rating) {
-                    stars += '<i class="fas fa-star"></i>';
-                } else {
-                    stars += '<i class="far fa-star"></i>';
-                }
-            }
-            return stars;
-        }
-
-        // Load product data
-        async function loadProduct() {
-            try {
-                $('#loading').show();
-                const productId = getProductId();
-                
-                const response = await $.ajax({
-                    url: `${ENV.API_BASE_URL}/api/v1/product/685035c8095e73f3384a39c2`,
-                    method: 'GET',
-                    dataType: 'json'
-                });
-
-                if (response.status_code === 200) {
-                    productData = response.data;
-                    renderProduct();
-                } else {
-                    throw new Error(response.message || 'Failed to load product');
-                }
-            } catch (error) {
-                console.error('Error loading product:', error);
-                toastr.error('Không thể tải thông tin sản phẩm. Vui lòng thử lại!');
-            } finally {
-                $('#loading').hide();
-            }
-        }
-
-        // Render product information
-        function renderProduct() {
-            const product = productData;
-            
-            // Update product name
-            $('#product-name').text(product.product_name);
-            document.title = product.product_name;
-
-            // Update rating
-            $('#rating-stars').html(generateStars(product.rating_average));
-            $('#rating-text').text(`(${product.reviews_count} đánh giá)`);
-
-            // Update color
-            $('#product-color').text(product.color);
-
-            // Update prices
-            const originalPrice = product.price;
-            const discountedPrice = originalPrice * (1 - product.discount / 100);
-            
-            $('#original-price').text(formatCurrency(originalPrice));
-            $('#discounted-price').text(formatCurrency(discountedPrice));
-            $('#discount-percent').text(`-${product.discount}%`);
-
-            if (product.discount > 0) {
-                $('#discount-badge').text(`-${product.discount}%`).show();
-            }
-
-            // Update main image
-            $('#main-image').attr('src', product.main_image);
-
-            // Update thumbnails
-            renderThumbnails();
-
-            // Update sizes
-            renderSizes();
-
-            // Update description
-            $('#product-description').html(product.product_description.replace(/\r\n/g, '<br>'));
-
-            // Add fade-in animation
-            $('#product-container').addClass('fade-in');
-        }
-
-        // Render thumbnail images
-        function renderThumbnails() {
-            const product = productData;
-            const container = $('#thumbnail-container');
-            container.empty();
-
-            // Add main image as first thumbnail
-            const mainThumb = $(`
-                <div class="thumbnail-image active w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 flex-shrink-0" data-image="${product.main_image}">
-                    <img src="${product.main_image}" alt="Main" class="w-full h-full object-cover">
-                </div>
-            `);
-            container.append(mainThumb);
-
-            // Add sub images
-            product.sub_image.forEach(img => {
-                const thumb = $(`
-                    <div class="thumbnail-image w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 flex-shrink-0" data-image="${img.url}">
-                        <img src="${img.url}" alt="Sub Image" class="w-full h-full object-cover">
-                    </div>
-                `);
-                container.append(thumb);
-            });
-
-            // Add click events
-            $('.thumbnail-image').on('click', function() {
-                const imageUrl = $(this).data('image');
-                $('#main-image').attr('src', imageUrl);
-                
-                $('.thumbnail-image').removeClass('active');
-                $(this).addClass('active');
-            });
-        }
-
-        // Render size options
-        function renderSizes() {
-            const product = productData;
-            const container = $('#size-options');
-            container.empty();
-
-            product.sizes.forEach(sizeOption => {
-                const sizeBtn = $(`
-                    <div class="size-option border-2 border-gray-300 rounded-lg p-3 text-center font-semibold ${sizeOption.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}" 
-                         data-size="${sizeOption.size}" data-stock="${sizeOption.stock}">
-                        ${sizeOption.size}
-                    </div>
-                `);
-                
-                if (sizeOption.stock > 0) {
-                    sizeBtn.on('click', function() {
-                        selectedSize = $(this).data('size');
-                        const stock = $(this).data('stock');
-                        
-                        $('.size-option').removeClass('selected');
-                        $(this).addClass('selected');
-                        
-                        $('#stock-info').text(`Còn ${stock} sản phẩm`);
-                        $('#quantity').attr('max', stock);
-                        
-                        if (currentQuantity > stock) {
-                            currentQuantity = stock;
-                            $('#quantity').val(currentQuantity);
-                        }
-                    });
-                }
-                
-                container.append(sizeBtn);
-            });
-        }
-
-        // Quantity controls
-        $('#decrease-qty').on('click', function() {
-            if (currentQuantity > 1) {
-                currentQuantity--;
-                $('#quantity').val(currentQuantity);
-            }
-        });
-
-        $('#increase-qty').on('click', function() {
-            const maxStock = selectedSize ? 
-                productData.sizes.find(s => s.size === selectedSize)?.stock : 
-                Math.max(...productData.sizes.map(s => s.stock));
-            
-            if (currentQuantity < maxStock) {
-                currentQuantity++;
-                $('#quantity').val(currentQuantity);
-            }
-        });
-
-        $('#quantity').on('change', function() {
-            const value = parseInt($(this).val());
-            const maxStock = selectedSize ? 
-                productData.sizes.find(s => s.size === selectedSize)?.stock : 
-                Math.max(...productData.sizes.map(s => s.stock));
-            
-            if (value >= 1 && value <= maxStock) {
-                currentQuantity = value;
-            } else {
-                $(this).val(currentQuantity);
-            }
-        });
-
-        // Add to cart functionality
-        $('#add-to-cart').on('click', function() {
-            if (!selectedSize) {
-                toastr.warning('Vui lòng chọn kích thước!');
-                return;
-            }
-
-            const selectedSizeData = productData.sizes.find(s => s.size === selectedSize);
-            if (selectedSizeData.stock < currentQuantity) {
-                toastr.error('Số lượng vượt quá tồn kho!');
-                return;
-            }
-
-            // Add loading effect
-            const btn = $(this);
-            const originalText = btn.html();
-            btn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Đang thêm...');
-            btn.prop('disabled', true);
-
-            // Simulate API call
-            setTimeout(() => {
-                toastr.success('Đã thêm sản phẩm vào giỏ hàng!');
-                btn.html(originalText);
-                btn.prop('disabled', false);
-            }, 1000);
-        });
-
-        // Initialize toastr
-        toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        };
-
-        // Initialize page
         $(document).ready(function() {
-            loadProduct();
+            loadProductByID();
         });
     </script>
 </body>
