@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <link rel="stylesheet" href="/ecommerce_fe/css/home/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -99,7 +100,7 @@
 
                     <!-- Action Buttons -->
                     <div class="space-y-3">
-                        <button class="add-to-cart add-to-cart-btn w-full py-4 text-white font-bold rounded-lg text-lg">
+                        <button  id="add-to-cart" class="add-to-cart-btn w-full py-4 text-white font-bold rounded-lg text-lg">
                             <i class="fas fa-shopping-cart mr-2"></i>
                             Add to Cart
                         </button>

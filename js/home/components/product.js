@@ -16,6 +16,8 @@ toastr.options = {
     "hideMethod": "fadeOut"
 };
 
+const token = localStorage.getItem('token');
+
 let productData = null;
 let selectedSize = null;
 let currentQuantity = 1;
@@ -422,7 +424,6 @@ $('#quantity').on('change', function () {
 });
 
 $('#add-to-cart').on('click', function () {
-
     if (!selectedSize) {
         toastr.warning('Please select a size');
         return;
@@ -433,17 +434,43 @@ $('#add-to-cart').on('click', function () {
         toastr.error('Quantity exceeds stock!');
         return;
     }
-
-    // Add loading effect
+    selectedSize = selectedSize.toString();
     const btn = $(this);
     const originalText = btn.html();
     btn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Adding...');
     btn.prop('disabled', true);
+    const decoded = jwt_decode(token);
+    const userId = decoded.user_id;
+    console.log(userId);
+    // Dữ liệu gửi lên API
+    const data = {
+        product_id: productData.id,
+        size: selectedSize,
+        quantity: currentQuantity,
+        user_id: userId
+    }
 
-    // Simulate API call
-    setTimeout(() => {
-        toastr.success('Product added to cart!');
-        btn.html(originalText);
-        btn.prop('disabled', false);
-    }, 1000);
+    // Gửi request AJAX
+    $.ajax({
+        url: `${ENV.API_BASE_URL}/api/v1/cart`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (response) {
+            toastr.success('Product added to cart!');
+            
+            const badge = $('#cart-icon');
+            let count = parseInt(badge.text());
+            badge.text(count + 1);
+
+            // Reset nút
+            btn.html(originalText);
+            btn.prop('disabled', false);
+        },
+        error: function (xhr) {
+            toastr.error('Failed to add to cart!');
+            btn.html(originalText);
+            btn.prop('disabled', false);
+        }
+    });
 });

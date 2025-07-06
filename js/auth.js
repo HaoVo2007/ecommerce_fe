@@ -25,7 +25,6 @@ $(document).ready(function () {
     $('#registerForm').on('submit', function (e) {
         e.preventDefault();
 
-        $('#btnRegister').addClass('loading');
         $('#buttonText').hide();
         $('#loadingText').show();
 
@@ -122,7 +121,6 @@ $(document).ready(function () {
     });
 
     function resetButton() {
-        $('#btnRegister').removeClass('loading');
         $('#buttonText').show();
         $('#loadingText').hide();
     }
@@ -142,7 +140,6 @@ $(document).ready(function () {
         }
 
         // Show loading
-        $('#btnLogin').addClass('loading');
         $('#buttonText').hide();
         $('#loadingText').show();
 
@@ -157,7 +154,6 @@ $(document).ready(function () {
                 xhr.setRequestHeader('Accept', 'application/json');
             },
             success: function (data) {
-                $('#btnLogin').removeClass('loading');
                 $('#buttonText').show();
                 $('#loadingText').hide();
 

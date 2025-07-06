@@ -76,9 +76,9 @@ $(function () {
                         <i class="fas fa-heart text-xl"></i>
                         <span class="cart-badge">0</span>
                     </a>
-                    <a href="/ecommerce_fe/cart.html" class="icon-hover relative p-2 text-white hover:text-yellow-400 rounded-full glass-effect">
+                    <a href="/ecommerce_fe/home/cart.html" class="icon-hover relative p-2 text-white hover:text-yellow-400 rounded-full glass-effect">
                         <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="cart-badge">0</span>
+                        <span id="cart-icon" class="cart-badge">0</span>
                     </a>
                 </div>
 
@@ -159,7 +159,7 @@ $(function () {
                     <a href="/ecommerce_fe/wishlist.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                         <i class="fas fa-heart"></i>
                     </a>
-                    <a href="/ecommerce_fe/cart.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                    <a href="/ecommerce_fe/home/cart.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                         <i class="fas fa-shopping-cart"></i>
                     </a>
                 </div>
@@ -196,7 +196,7 @@ $(function () {
                         <i class="fas fa-heart text-xl"></i>
                         <span class="cart-badge">0</span>
                     </a>
-                    <a href="/ecommerce_fe/cart.html" class="icon-hover relative p-2 text-white hover:text-yellow-400 rounded-full glass-effect">
+                    <a href="/ecommerce_fe/home/cart.html" class="icon-hover relative p-2 text-white hover:text-yellow-400 rounded-full glass-effect">
                         <i class="fas fa-shopping-cart text-xl"></i>
                         <span class="cart-badge">0</span>
                     </a>
@@ -233,7 +233,7 @@ $(function () {
                         <a href="/ecommerce_fe/wishlist.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                             <i class="fas fa-heart"></i>
                         </a>
-                        <a href="/ecommerce_fe/cart.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <a href="/ecommerce_fe/home/cart.html" class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                             <i class="fas fa-shopping-cart"></i>
                         </a>
                     </div>
