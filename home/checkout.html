@@ -507,7 +507,8 @@
                     throw new Error(orderResponse.message || 'Không thể tạo đơn hàng');
                 }
 
-                const orderId = orderResponse.data.id;
+                const orderId = orderResponse.data;
+                console.log('Order created successfully:', orderId);
                 updateProgressStep(2);
 
                 // Step 2: Create payment intent
