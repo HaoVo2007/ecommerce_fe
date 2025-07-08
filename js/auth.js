@@ -27,7 +27,7 @@ $(document).ready(function () {
 
         $('#buttonText').hide();
         $('#loadingText').show();
-
+        $('#btnRegister').prop('disabled', true);
         const formData = {
             firstName: $('#firstName').val().trim(),
             lastName: $('#lastName').val().trim(),
@@ -63,6 +63,7 @@ $(document).ready(function () {
                 password: formData.password
             }),
             success: function (response) {
+                $('#btnRegister').prop('disabled', false);
                 if (response.status_code === 200 || response.data?.token) {
                     toastr.success('Registration successful');
 
@@ -142,6 +143,7 @@ $(document).ready(function () {
         // Show loading
         $('#buttonText').hide();
         $('#loadingText').show();
+        $('#btnLogin').prop('disabled', true);
 
         $.ajax({
             url: `${ENV.API_BASE_URL}/api/v1/user/login`,
@@ -156,7 +158,7 @@ $(document).ready(function () {
             success: function (data) {
                 $('#buttonText').show();
                 $('#loadingText').hide();
-
+                $('#btnLogin').prop('disabled', false);
                 if (data.status_code === 200) {
                     toastr.success('Login successfully');
 
