@@ -250,68 +250,76 @@
     </div>
     <script src="/ecommerce_fe/js/env.js"></script>
     <script>
-
-
         const token = localStorage.getItem('token');
         const decoded = jwt_decode(token);
         const userId = decoded.user_id;
-
+    
         // Stripe configuration
-        const stripe = Stripe('pk_test_51RbYyDE6NV5oM3BUEfCdXmkKHulrENshMbLNYZYWvYZNKh2tQf2iFzR1iaLXtOarNPBkvAwMd2JRcnOvPQa9EHYT00ML32fVcm'); // Thay thế bằng key thực tế
+        const stripe = Stripe('pk_test_51RbYyDE6NV5oM3BUEfCdXmkKHulrENshMbLNYZYWvYZNKh2tQf2iFzR1iaLXtOarNPBkvAwMd2JRcnOvPQa9EHYT00ML32fVcm');
         const elements = stripe.elements();
         let cardElement;
-
+    
         // Global variables
         let selectedPaymentMethod = null;
         let cartData = null;
         let paymentIntent = null;
-
+    
         // Initialize page
         $(document).ready(function() {
             initializeStripe();
             loadCartByUserID();
             bindEvents();
         });
-
+    
         function initializeStripe() {
-            cardElement = elements.create('card', {
-                style: {
-                    base: {
-                        fontSize: '16px',
-                        color: '#424770',
-                        '::placeholder': {
-                            color: '#aab7c4',
+            try {
+                cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#424770',
+                            '::placeholder': {
+                                color: '#aab7c4',
+                            },
+                        },
+                        invalid: {
+                            color: '#9e2146',
                         },
                     },
-                    invalid: {
-                        color: '#9e2146',
-                    },
-                },
-            });
-
-            cardElement.mount('#card-element');
-
-            // Handle card events
-            cardElement.on('focus', function() {
-                $('#card-element').addClass('focused');
-            });
-
-            cardElement.on('blur', function() {
-                $('#card-element').removeClass('focused');
-            });
-
-            cardElement.on('change', function(event) {
-                const displayError = $('#card-errors');
-                if (event.error) {
-                    displayError.text(event.error.message);
-                    $('#card-element').addClass('error');
-                } else {
-                    displayError.text('');
-                    $('#card-element').removeClass('error');
-                }
-            });
+                });
+    
+                cardElement.mount('#card-element');
+                console.log('Card element mounted successfully');
+    
+                // Handle card events
+                cardElement.on('focus', function() {
+                    $('#card-element').addClass('focused');
+                });
+    
+                cardElement.on('blur', function() {
+                    $('#card-element').removeClass('focused');
+                });
+    
+                cardElement.on('change', function(event) {
+                    const displayError = $('#card-errors');
+                    if (event.error) {
+                        displayError.text(event.error.message);
+                        $('#card-element').addClass('error');
+                    } else {
+                        displayError.text('');
+                        $('#card-element').removeClass('error');
+                    }
+                });
+    
+                cardElement.on('ready', function() {
+                    console.log('Card element is ready');
+                });
+            } catch (error) {
+                console.error('Error initializing Stripe:', error);
+                toastr.error('Không thể khởi tạo thanh toán. Vui lòng thử lại.');
+            }
         }
-
+    
         function bindEvents() {
             // Payment method selection
             $('.payment-method-card').on('click', function() {
@@ -329,18 +337,18 @@
                 
                 $('#place-order-btn').prop('disabled', false);
             });
-
+    
             // Place order button
             $('#place-order-btn').on('click', function() {
                 if (!selectedPaymentMethod) {
                     toastr.error('Vui lòng chọn phương thức thanh toán');
                     return;
                 }
-
+    
                 if (!validateShippingForm()) {
                     return;
                 }
-
+    
                 if (selectedPaymentMethod === 'stripe') {
                     processStripePayment();
                 } else {
@@ -348,7 +356,7 @@
                 }
             });
         }
-
+    
         function loadCartByUserID() {
             $('#loading').show();
             $.ajax({
@@ -375,18 +383,18 @@
                 }
             });
         }
-
+    
         function renderCartItems(items) {
             const container = $('#cart-items');
             container.empty();
-
+    
             let totalProducts = 0;
             let subtotal = 0;
-
+    
             items.forEach((item) => {
                 totalProducts += item.quantity;
                 subtotal += item.price * item.quantity;
-
+    
                 const itemHtml = `
                     <div class="p-4 sm:p-6 animate-fade-in" data-id="${item.product_id}">
                         <div class="flex items-center gap-4">
@@ -404,44 +412,72 @@
                 `;
                 container.append(itemHtml);
             });
-
+    
             // Update cart count and summary
             $('#cart-count').text(`${totalProducts} sản phẩm`);
             updateOrderSummary(subtotal);
         }
-
+    
         function updateOrderSummary(subtotal) {
             const shipping = 50000;
             const discount = 0;
             const total = subtotal + shipping - discount;
-
+    
             $('#subtotal').text(formatCurrency(subtotal));
             $('#shipping').text(formatCurrency(shipping));
             $('#discount').text(discount > 0 ? `- ${formatCurrency(discount)}` : formatCurrency(0));
             $('#total').text(formatCurrency(total));
         }
-
+    
         function validateShippingForm() {
             const name = $('#customer-name').val().trim();
             const phone = $('#customer-phone').val().trim();
             const email = $('#customer-email').val().trim();
             const address = $('#customer-address').val().trim();
-
+    
             if (!name || !phone || !email || !address) {
                 toastr.error('Vui lòng điền đầy đủ thông tin giao hàng');
                 return false;
             }
-
+    
             // Basic email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 toastr.error('Email không hợp lệ');
                 return false;
             }
-
+    
             return true;
         }
-
+    
+        // Validate card element before payment
+        async function validateCardElement() {
+            try {
+                const {error, paymentMethod} = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        name: $('#customer-name').val(),
+                        email: $('#customer-email').val(),
+                        phone: $('#customer-phone').val(),
+                    }
+                });
+                
+                if (error) {
+                    console.error('Card validation error:', error);
+                    toastr.error(error.message);
+                    return false;
+                }
+                
+                console.log('Card validation successful:', paymentMethod);
+                return true;
+            } catch (error) {
+                console.error('Card validation failed:', error);
+                toastr.error('Thẻ không hợp lệ. Vui lòng kiểm tra lại.');
+                return false;
+            }
+        }
+    
         function createCODOrder() {
             setLoading(true);
             
@@ -452,7 +488,7 @@
                 phone: $('#customer-phone').val().trim(),
                 address: $('#customer-address').val().trim()
             };
-
+    
             $.ajax({
                 url: `${ENV.API_BASE_URL}/api/v1/order`,
                 method: 'POST',
@@ -479,12 +515,24 @@
                 }
             });
         }
-
+    
         async function processStripePayment() {
             setLoading(true);
             
             try {
+                // Step 0: Validate card element first
+                if (!cardElement) {
+                    throw new Error('Card element chưa được khởi tạo');
+                }
+    
+                console.log('Validating card element...');
+                const isCardValid = await validateCardElement();
+                if (!isCardValid) {
+                    return;
+                }
+    
                 // Step 1: Create order first
+                console.log('Creating order...');
                 const orderData = {
                     user_id: userId,
                     name: $('#customer-name').val().trim(),
@@ -492,7 +540,7 @@
                     phone: $('#customer-phone').val().trim(),
                     address: $('#customer-address').val().trim()
                 };
-
+    
                 const orderResponse = await $.ajax({
                     url: `${ENV.API_BASE_URL}/api/v1/order`,
                     method: 'POST',
@@ -502,16 +550,17 @@
                     },
                     data: JSON.stringify(orderData)
                 });
-
+    
                 if (orderResponse.status_code !== 201) {
                     throw new Error(orderResponse.message || 'Không thể tạo đơn hàng');
                 }
-
+    
                 const orderId = orderResponse.data;
                 console.log('Order created successfully:', orderId);
                 updateProgressStep(2);
-
+    
                 // Step 2: Create payment intent
+                console.log('Creating payment intent...');
                 const paymentResponse = await $.ajax({
                     url: `${ENV.API_BASE_URL}/api/v1/payment/create-intent`,
                     method: 'POST',
@@ -523,15 +572,22 @@
                         order_id: orderId
                     })
                 });
-
-                if (!paymentResponse.success) {
+    
+                console.log('Payment response:', paymentResponse);
+                
+                // Check API response format
+                if (paymentResponse.status_code !== 200) {
                     throw new Error(paymentResponse.message || 'Không thể tạo payment intent');
                 }
-
+    
+                // Extract payment intent from response
                 paymentIntent = paymentResponse.data;
-
+                console.log('Payment intent created:', paymentIntent);
+    
                 // Step 3: Confirm payment with Stripe
-                const {error, paymentIntent: confirmedIntent} = await stripe.confirmCardPayment(
+                console.log('Confirming payment with client_secret:', paymentIntent.client_secret);
+                
+                const confirmResult = await stripe.confirmCardPayment(
                     paymentIntent.client_secret,
                     {
                         payment_method: {
@@ -544,32 +600,49 @@
                         }
                     }
                 );
-
-                if (error) {
-                    throw new Error(error.message);
+    
+                console.log('Stripe confirmation result:', confirmResult);
+    
+                if (confirmResult.error) {
+                    // Handle different types of errors
+                    switch (confirmResult.error.type) {
+                        case 'card_error':
+                            throw new Error(`Lỗi thẻ: ${confirmResult.error.message}`);
+                        case 'validation_error':
+                            throw new Error(`Lỗi validation: ${confirmResult.error.message}`);
+                        case 'authentication_error':
+                            throw new Error(`Lỗi xác thực: ${confirmResult.error.message}`);
+                        case 'rate_limit_error':
+                            throw new Error('Quá nhiều yêu cầu. Vui lòng thử lại sau.');
+                        case 'api_error':
+                            throw new Error('Lỗi hệ thống. Vui lòng thử lại.');
+                        default:
+                            throw new Error(`Lỗi thanh toán: ${confirmResult.error.message}`);
+                    }
                 }
-
-                if (confirmedIntent.status === 'succeeded') {
-                    toastr.success('Thanh toán thành công!');
-                    $('#success-modal').removeClass('hidden');
-                    updateProgressStep(3);
-                } else {
-                    throw new Error('Thanh toán chưa hoàn tất');
-                }
-
+    
             } catch (error) {
-                console.error('Payment error:', error);
-                toastr.error(error.message || 'Có lỗi xảy ra trong quá trình thanh toán');
+                if (error.message.includes('Your card was declined')) {
+                    toastr.error('Thẻ của bạn đã bị từ chối. Vui lòng thử thẻ khác.');
+                } else if (error.message.includes('Your card number is incomplete')) {
+                    toastr.error('Số thẻ không đầy đủ. Vui lòng kiểm tra lại.');
+                } else if (error.message.includes('Your card has expired')) {
+                    toastr.error('Thẻ của bạn đã hết hạn. Vui lòng thử thẻ khác.');
+                } else if (error.message.includes('Your card\'s security code is incorrect')) {
+                    toastr.error('Mã CVV không chính xác. Vui lòng kiểm tra lại.');
+                } else {
+                    toastr.error(error.message || 'Có lỗi xảy ra trong quá trình thanh toán');
+                }
             } finally {
                 setLoading(false);
             }
         }
-
+    
         function setLoading(loading) {
             const btn = $('#place-order-btn');
             const btnText = $('#btn-text');
             const spinner = $('#btn-spinner');
-
+    
             if (loading) {
                 btn.prop('disabled', true);
                 btnText.text('Đang xử lý...');
@@ -584,7 +657,7 @@
                 }
             }
         }
-
+    
         function updateProgressStep(step) {
             $('.step').removeClass('active completed');
             for (let i = 1; i <= step; i++) {
@@ -595,14 +668,14 @@
                 }
             }
         }
-
+    
         function formatCurrency(amount) {
             return new Intl.NumberFormat('vi-VN', {
                 style: 'currency',
                 currency: 'VND'
             }).format(amount);
         }
-
+    
         // Toastr configuration
         toastr.options = {
             closeButton: true,
@@ -621,6 +694,22 @@
             showMethod: "fadeIn",
             hideMethod: "fadeOut"
         };
+    
+        // Additional error handling for global errors
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error);
+            if (event.error.message.includes('Stripe')) {
+                toastr.error('Có lỗi xảy ra với hệ thống thanh toán. Vui lòng thử lại.');
+            }
+        });
+    
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            if (event.reason && event.reason.message && event.reason.message.includes('Stripe')) {
+                toastr.error('Có lỗi xảy ra với hệ thống thanh toán. Vui lòng thử lại.');
+            }
+        });
     </script>
 </body>
 </html>
